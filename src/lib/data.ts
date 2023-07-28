@@ -2,18 +2,18 @@ import moment from 'moment';
 import type { CalendarEvent } from './types';
 
 export const allMonths = [
-  { month: 'January', visible: true },
-  { month: 'February', visible: true },
-  { month: 'March', visible: true },
-  { month: 'April', visible: true },
-  { month: 'May', visible: true },
-  { month: 'June', visible: true },
-  { month: 'July', visible: true },
-  { month: 'August', visible: true },
-  { month: 'September', visible: true },
-  { month: 'October', visible: true },
-  { month: 'November', visible: true },
-  { month: 'December', visible: true }
+  { description: 'January', visible: true },
+  { description: 'February', visible: true },
+  { description: 'March', visible: true },
+  { description: 'April', visible: true },
+  { description: 'May', visible: true },
+  { description: 'June', visible: true },
+  { description: 'July', visible: true },
+  { description: 'August', visible: true },
+  { description: 'September', visible: true },
+  { description: 'October', visible: true },
+  { description: 'November', visible: true },
+  { description: 'December', visible: true }
 ];
 
 const allHolidays = [
