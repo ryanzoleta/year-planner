@@ -158,8 +158,9 @@
                 ? 'h-28'
                 : preferences.layout === '2'
                 ? 'h-32'
-                : 'h-32'}">
-              <p class="p-1 text-xs text-zinc-400">{date.format('D')}</p>
+                : 'h-32'}
+                {date.isSame(moment(), 'date') ? 'border border-red-500' : ''}">
+              <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
 
               {#each preferences.events.filter((e) => e.date.isSame(date, 'date')) as event}
                 <p class="rounded-md bg-green-500 px-[2px] py-[1px] text-left text-xs text-white">
@@ -170,7 +171,7 @@
               {#each preferences.holidays.filter((h) => h.visible) as holidayGroup}
                 {#each holidayGroup.dates.filter( (d) => moment(d.date).isSame(date, 'date') ) as holiday}
                   <p
-                    class="z-10 rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
+                    class="z-10 w-full rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
                     {#if holidayGroup.group === 'US'}
                       🇺🇸
                     {:else if holidayGroup.group === 'PH'}

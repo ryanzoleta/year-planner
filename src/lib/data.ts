@@ -33,6 +33,30 @@ const allHolidays = [
       {
         date: moment('2023-02-20'),
         holiday: "President's Day"
+      },
+      {
+        date: moment('2023-05-29'),
+        holiday: 'Memorial Day'
+      },
+      {
+        date: moment('2023-07-04'),
+        holiday: 'Independence Day'
+      },
+      {
+        date: moment('2023-09-04'),
+        holiday: 'Labor Day'
+      },
+      {
+        date: moment('2023-11-23'),
+        holiday: 'Thanksgiving'
+      },
+      {
+        date: moment('2023-11-24'),
+        holiday: 'Day After Thanksgiving'
+      },
+      {
+        date: moment('2023-12-25'),
+        holiday: 'Christmas'
       }
     ]
   },
@@ -44,6 +68,74 @@ const allHolidays = [
       {
         date: moment('2023-02-24'),
         holiday: 'People Power Revolution'
+      },
+      {
+        date: moment('2023-04-06'),
+        holiday: 'Maundy Thursday'
+      },
+      {
+        date: moment('2023-04-07'),
+        holiday: 'Good Friday'
+      },
+      {
+        date: moment('2023-04-08'),
+        holiday: 'Black Saturday'
+      },
+      {
+        date: moment('2023-04-10'),
+        holiday: 'The Day of Valor'
+      },
+      {
+        date: moment('2023-04-21'),
+        holiday: "Eid'l Fitr"
+      },
+      {
+        date: moment('2023-05-01'),
+        holiday: 'Labor Day'
+      },
+      {
+        date: moment('2023-06-12'),
+        holiday: 'Independence Day'
+      },
+      {
+        date: moment('2023-06-28'),
+        holiday: 'Eidul Adha'
+      },
+      {
+        date: moment('2023-08-21'),
+        holiday: 'Ninoy Aquino Day'
+      },
+      {
+        date: moment('2023-08-28'),
+        holiday: 'National Heroes Day'
+      },
+      {
+        date: moment('2023-11-01'),
+        holiday: "All Saint's Day"
+      },
+      {
+        date: moment('2023-11-02'),
+        holiday: "All Souls' Day"
+      },
+      {
+        date: moment('2023-11-27'),
+        holiday: 'Bonifacio Day'
+      },
+      {
+        date: moment('2023-12-08'),
+        holiday: 'Immaculate Conception Day'
+      },
+      {
+        date: moment('2023-12-25'),
+        holiday: 'Christmas Day'
+      },
+      {
+        date: moment('2023-12-30'),
+        holiday: 'Rizal Day'
+      },
+      {
+        date: moment('2023-12-31'),
+        holiday: "New Year's Day"
       }
     ]
   }
