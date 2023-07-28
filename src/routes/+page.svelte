@@ -6,6 +6,7 @@
 
   let selectingMonths = false;
   let months = allMonths;
+  let columns = '3';
 
   const allDates = generateAllDates(2023);
 
@@ -48,46 +49,57 @@
 
 <div class="mb-3 flex place-content-between place-items-center gap-2 bg-slate-200 p-4">
   <h1 class="text-2xl font-extrabold text-slate-700">Year Planner</h1>
-  <button
-    class="month-selector relative rounded-md border border-slate-300 px-3 py-2 font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
-    on:click={() => {
-      selectingMonths = true;
-    }}
-    >Show/Hide Months
 
-    {#if selectingMonths}
-      <div
-        class=" absolute right-0 top-full mt-2 flex w-56 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
-        {#each months as month}
-          <div class="form-control px-2">
-            <label class="label block w-full cursor-pointer">
-              <input type="checkbox" bind:checked={month.visible} class="checkbox" />
-              <span class="label-text">{month.month}</span>
-            </label>
-          </div>
-        {/each}
-        <button
-          class="  block w-full rounded-md bg-green-500 py-2 text-center font-bold text-green-100 transition duration-100 hover:bg-green-600"
-          on:click={() => {
-            months = months.map((m) => {
-              m.visible = true;
-              return m;
-            });
-          }}>Show All</button>
-        <button
-          class="  block w-full rounded-md border border-slate-300 bg-slate-200 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
-          on:click={() => {
-            months = months.map((m) => {
-              m.visible = false;
-              return m;
-            });
-          }}>Hide All</button>
-      </div>
-    {/if}
-  </button>
+  <div>
+    <select
+      class="relative w-fit rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+      bind:value={columns}>
+      <option value="3">Grid</option>
+      <option value="2">2-Column</option>
+      <option value="1">Stack</option>
+    </select>
+
+    <button
+      class="month-selector relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+      on:click={() => {
+        selectingMonths = true;
+      }}
+      >Show/Hide Months
+
+      {#if selectingMonths}
+        <div
+          class=" absolute right-0 top-full mt-2 flex w-56 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
+          {#each months as month}
+            <div class="form-control px-2">
+              <label class="label block w-full cursor-pointer">
+                <input type="checkbox" bind:checked={month.visible} class="checkbox" />
+                <span class="label-text">{month.month}</span>
+              </label>
+            </div>
+          {/each}
+          <button
+            class="  block w-full rounded-md bg-green-500 py-2 text-center font-bold text-green-100 transition duration-100 hover:bg-green-600"
+            on:click={() => {
+              months = months.map((m) => {
+                m.visible = true;
+                return m;
+              });
+            }}>Show All</button>
+          <button
+            class="  block w-full rounded-md border border-slate-300 bg-slate-200 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+            on:click={() => {
+              months = months.map((m) => {
+                m.visible = false;
+                return m;
+              });
+            }}>Hide All</button>
+        </div>
+      {/if}
+    </button>
+  </div>
 </div>
 
-<div class="grid grid-cols-3 gap-2 p-1">
+<div class="grid grid-cols-{columns} gap-2 p-1 {parseInt(columns) < 3 ? 'px-10' : ''}">
   {#each months as month}
     {#if month.visible}
       <div>
