@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import { daysOfWeek, defaultPreferences } from '$lib/data';
   import { generateAllDates } from '$lib/utils';
+  import moment from 'moment';
   import { onMount } from 'svelte';
 
   let preferences: typeof defaultPreferences;
@@ -14,6 +15,8 @@
   onMount(() => {
     const preferencesString = localStorage.getItem('preferences');
     preferences = preferencesString ? JSON.parse(preferencesString) : defaultPreferences;
+
+    console.log(preferences);
 
     window.onclick = (event) => {
       const targetElement = event.target;
@@ -195,6 +198,24 @@
                       {/if}
                     {/each}
                   {/if}
+
+                  {#each preferences.holidays as holidayGroup}
+                    {#if holidayGroup.visible}
+                      {#each holidayGroup.dates as holiday}
+                        {#if moment(holiday.date).isSame(date, 'date')}
+                          <p
+                            class="line-clamp-1 rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
+                            {#if holidayGroup.group === 'US'}
+                              🇺🇸
+                            {:else if holidayGroup.group === 'PH'}
+                              🇵🇭
+                            {/if}
+                            {holiday.holiday}
+                          </p>
+                        {/if}
+                      {/each}
+                    {/if}
+                  {/each}
                 </button>
               {/if}
             {/each}

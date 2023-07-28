@@ -1,3 +1,4 @@
+import moment from 'moment';
 import type { CalendarEvent } from './types';
 
 export const allMonths = [
@@ -19,12 +20,32 @@ const allHolidays = [
   {
     group: 'US',
     description: 'US Holidays',
-    visible: false
+    visible: false,
+    dates: [
+      {
+        date: moment('2023-01-02'),
+        holiday: "New Year's Day"
+      },
+      {
+        date: moment('2023-01-16'),
+        holiday: 'Martin Luther King Jr. Day'
+      },
+      {
+        date: moment('2023-02-20'),
+        holiday: "President's Day"
+      }
+    ]
   },
   {
     group: 'PH',
     description: 'PH Holidays',
-    visible: false
+    visible: false,
+    dates: [
+      {
+        date: moment('2023-02-24'),
+        holiday: 'People Power Revolution'
+      }
+    ]
   }
 ];
 
