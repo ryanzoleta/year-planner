@@ -5,10 +5,23 @@
   import { onMount } from 'svelte';
 
   let selectingMonths = false;
+  let selectingHolidays = false;
   let months = allMonths;
   let columns = '3';
 
   const allDates = generateAllDates(2023);
+  const holidays = [
+    {
+      group: 'US',
+      description: 'US Holidays',
+      visible: false
+    },
+    {
+      group: 'PH',
+      description: 'PH Holidays',
+      visible: false
+    }
+  ];
 
   type Event = {
     date: moment.Moment;
@@ -34,7 +47,7 @@
       let currentElement = targetElement;
       while (currentElement !== document.body) {
         //@ts-ignore
-        if (currentElement.classList.contains('month-selector')) {
+        if (currentElement.classList.contains('dropdown')) {
           console.log('Target is a child of an element with classname "custom"');
           return;
         }
@@ -43,6 +56,7 @@
       }
 
       selectingMonths = false;
+      selectingHolidays = false;
     };
   });
 </script>
@@ -65,9 +79,10 @@
     <div class="flex flex-col gap-1">
       <p class="text-xs text-slate-500">Months</p>
       <button
-        class="month-selector relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+        class="dropdown relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
         on:click={() => {
           selectingMonths = true;
+          selectingHolidays = false;
         }}
         >Show/Hide Months
 
@@ -98,6 +113,32 @@
                   return m;
                 });
               }}>Hide All</button>
+          </div>
+        {/if}
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <p class="text-xs text-slate-500">Months</p>
+      <button
+        class="dropdown relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+        on:click={() => {
+          selectingHolidays = true;
+          selectingMonths = false;
+        }}
+        >Show/Hide Holidays
+
+        {#if selectingHolidays}
+          <div
+            class="absolute right-0 top-full mt-2 flex w-36 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
+            {#each holidays as holiday}
+              <div class="form-control px-2">
+                <label class="label block w-full cursor-pointer">
+                  <input type="checkbox" bind:checked={holiday.visible} class="checkbox" />
+                  <span class="label-text">{holiday.description}</span>
+                </label>
+              </div>
+            {/each}
           </div>
         {/if}
       </button>
