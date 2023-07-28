@@ -4,6 +4,7 @@
   import { generateAllDates } from '$lib/utils';
   import moment from 'moment';
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
 
   let preferences: typeof defaultPreferences;
 
@@ -70,7 +71,8 @@
 
           {#if selectingMonths}
             <div
-              class=" absolute right-0 top-full mt-2 flex w-56 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
+              class=" absolute right-0 top-full mt-4 flex w-56 flex-col gap-2 rounded-md border border-gray-300 bg-gray-100 px-1 py-2 text-left"
+              transition:fade={{ duration: 100 }}>
               {#each preferences.months as month}
                 <div class="form-control px-2">
                   <label class="label block w-full cursor-pointer">
@@ -88,7 +90,7 @@
                   });
                 }}>Show All</button>
               <button
-                class="  block w-full rounded-md border border-slate-300 bg-slate-200 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+                class="  block w-full rounded-md border border-gray-300 bg-gray-200 py-2 text-center font-bold text-gray-600 transition duration-100 hover:bg-gray-300"
                 on:click={() => {
                   preferences.months = preferences.months.map((m) => {
                     m.visible = false;
@@ -101,7 +103,7 @@
       </div>
 
       <div class="flex flex-col gap-1">
-        <p class="text-xs text-slate-500">Months</p>
+        <p class="text-xs text-slate-500">Holidays</p>
         <button
           class="dropdown relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
           on:click={() => {
@@ -112,7 +114,7 @@
 
           {#if selectingHolidays}
             <div
-              class="absolute right-0 top-full mt-2 flex w-36 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
+              class="absolute right-0 top-full mt-4 flex w-36 flex-col gap-2 rounded-md border border-gray-300 bg-gray-100 px-1 py-2 text-left">
               {#each preferences.holidays as holiday}
                 <div class="form-control px-2">
                   <label class="label block w-full cursor-pointer">
@@ -186,7 +188,7 @@
                     : preferences.layout === '2'
                     ? 'h-32'
                     : 'h-32'}">
-                  <p class="p-1 text-xs text-zinc-500">{date.format('D')}</p>
+                  <p class="p-1 text-xs text-zinc-400">{date.format('D')}</p>
 
                   {#if preferences.events}
                     {#each preferences.events as event}
@@ -204,7 +206,7 @@
                       {#each holidayGroup.dates as holiday}
                         {#if moment(holiday.date).isSame(date, 'date')}
                           <p
-                            class="line-clamp-1 rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
+                            class="z-10 rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
                             {#if holidayGroup.group === 'US'}
                               🇺🇸
                             {:else if holidayGroup.group === 'PH'}
