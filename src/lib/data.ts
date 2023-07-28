@@ -148,5 +148,6 @@ export const defaultPreferences = {
   months: allMonths,
   holidays: allHolidays,
   events: [] as CalendarEvent[],
-  year: moment().year()
+  year: moment().year(),
+  darkMode: false
 };

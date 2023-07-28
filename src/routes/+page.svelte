@@ -10,6 +10,8 @@
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import cuid from 'cuid';
+  import IconMoon from '$lib/components/icons/IconMoon.svelte';
+  import IconSun from '$lib/components/icons/IconSun.svelte';
 
   let preferences: typeof defaultPreferences;
 
@@ -53,6 +55,12 @@
 
   $: if (browser && preferences) {
     localStorage.setItem('preferences', JSON.stringify(preferences));
+
+    if (preferences.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }
 
   function addEvent() {
@@ -100,16 +108,16 @@
 
 {#if preferences}
   <div
-    class="mb-3 flex place-content-between place-items-center gap-2 border-b border-slate-200 px-4 py-3">
+    class="mb-3 flex place-content-between place-items-center gap-2 border-b border-slate-200 px-4 py-3 dark:border-slate-700 dark:bg-black">
     <div class="flex place-items-center gap-3">
-      <h1 class="text-2xl font-extrabold text-slate-700">Year Planner</h1>
+      <h1 class="text-2xl font-extrabold text-slate-700 dark:text-slate-300">Year Planner</h1>
       <div class="flex place-items-center gap-2">
         <IconButton
           on:click={() => {
             preferences.year -= 1;
             allDates = generateAllDates(preferences.year);
           }}><IconChevronLeft /></IconButton>
-        <p class="text-xl font-bold text-slate-600">{preferences.year}</p>
+        <p class="text-xl font-bold text-slate-600 dark:text-slate-400">{preferences.year}</p>
         <IconButton
           on:click={() => {
             preferences.year += 1;
@@ -129,7 +137,7 @@
       <div class="flex flex-col gap-1">
         <p class="text-xs text-slate-500">Layout</p>
         <select
-          class="relative h-full w-fit rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-center text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+          class="relative h-full w-fit rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-center text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
           bind:value={preferences.layout}>
           <option value="3">Grid</option>
           <option value="2">2-Column</option>
@@ -160,22 +168,40 @@
           }}
           show={selectingHolidays} />
       </div>
+
+      {#if preferences.darkMode}
+        <IconButton
+          on:click={() => {
+            preferences.darkMode = false;
+          }}>
+          <IconSun />
+        </IconButton>
+      {:else}
+        <IconButton
+          on:click={() => {
+            preferences.darkMode = true;
+          }}>
+          <IconMoon />
+        </IconButton>
+      {/if}
     </div>
   </div>
 
   <div
-    class="grid {parseInt(preferences.layout) === 3
+    class="grid bg-white dark:bg-black {parseInt(preferences.layout) === 3
       ? 'grid-cols-3'
       : parseInt(preferences.layout) === 2
       ? 'grid-cols-2'
       : 'grid-cols-1'} gap-2 p-1 {parseInt(preferences.layout) < 3 ? 'px-10' : ''}">
     {#each preferences.months.filter((m) => m.visible) as month}
       <div>
-        <h3 class="py-2 text-center text-lg font-bold text-zinc-700">{month.description}</h3>
+        <h3 class="py-2 text-center text-lg font-bold text-zinc-700 dark:text-zinc-500">
+          {month.description}
+        </h3>
 
         <div class="grid grid-cols-7">
           {#each daysOfWeek as day}
-            <div class="px-2 py-4 text-center text-xs text-slate-400">{day}</div>
+            <div class="px-2 py-4 text-center text-xs text-slate-400 dark:text-zinc-500">{day}</div>
           {/each}
         </div>
 
@@ -213,9 +239,10 @@
             {/if}
 
             <button
-              class="flex h-20 flex-col hover:bg-slate-200 {date.day() === 6 || date.day() === 0
-                ? 'bg-slate-100'
-                : 'bg-slate-50'}
+              class="bg-whtie flex h-20 flex-col transition duration-100 hover:bg-slate-200 dark:hover:bg-zinc-800 {date.day() ===
+                6 || date.day() === 0
+                ? 'bg-slate-100 dark:bg-zinc-950'
+                : 'bg-slate-50 dark:bg-zinc-900'}
                   {preferences.layout === '3'
                 ? 'h-28'
                 : preferences.layout === '2'
@@ -249,12 +276,14 @@
 
                   {#if event.editing}
                     <div
-                      class="dropdown absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600"
+                      class="dropdown dark:text-zinc-30l0 absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600 dark:border-zinc-700 dark:bg-zinc-800"
                       transition:fade={{ duration: 100 }}>
-                      <h3 class="text-lg font-bold text-gray-800">{event.title}</h3>
+                      <h3 class="text-lg font-bold text-gray-800 dark:text-zinc-300">
+                        {event.title}
+                      </h3>
                       <div class="flex gap-2">
                         <button
-                          class="rounded-md border border-gray-200 px-3 py-1 text-sm transition duration-100 hover:bg-gray-100"
+                          class="rounded-md border border-gray-200 px-3 py-1 text-sm transition duration-100 hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
                           >Edit</button>
                         <button
                           class="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition duration-100 hover:bg-red-600"
@@ -290,25 +319,27 @@
   </div>
 {/if}
 
-<dialog id="addEventDialog" class="w-2/5 rounded-lg bg-white p-5 text-gray-700">
+<dialog
+  id="addEventDialog"
+  class="w-2/5 rounded-lg bg-white p-5 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
   <form class="flex flex-col gap-5" on:submit={addEvent}>
     <h1 class="text-2xl font-bold">Add Event</h1>
 
     <div class="flex flex-col gap-2">
-      <p class="text-sm text-gray-600">Description</p>
+      <p class="text-sm text-gray-600 dark:text-zinc-400">Description</p>
       <input
         type="text"
-        class="w-full rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+        class="w-full rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
         bind:value={eventDescription} />
     </div>
 
     <div class="flex flex-col gap-2">
-      <p class="text-sm text-gray-600">Date</p>
+      <p class="text-sm text-gray-600 dark:text-zinc-400">Date</p>
       <div class="flex gap-2">
         <select
           name="month"
           id="eventMonth"
-          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
           bind:value={eventMonth}>
           <option value="0">January</option>
           <option value="1">February</option>
@@ -323,23 +354,25 @@
           <option value="10">November</option>
           <option value="11">December</option>
         </select>
+
         <input
           type="number"
           id="eventDay"
           name="day"
-          class="w-20 rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+          class="w-20 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
           bind:value={eventDay} />
+
         <input
           type="number"
           id="eventYear"
           name="year"
-          class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+          class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
           bind:value={eventYear} />
       </div>
     </div>
 
     <div class="flex flex-col gap-2">
-      <p class="text-sm text-gray-600">Color</p>
+      <p class="text-sm text-gray-600 dark:text-zinc-400">Color</p>
       <div class="flex gap-2">
         <button
           class="h-10 w-10 rounded-full bg-red-400 {eventColor === 'red'
