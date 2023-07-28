@@ -22,6 +22,7 @@
   let eventDay: number;
   let eventYear: number;
   let eventDescription = '';
+  let eventColor: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray' = 'red';
 
   onMount(() => {
     const preferencesString = localStorage.getItem('preferences');
@@ -64,7 +65,8 @@
         date: moment().year(eventYear).month(eventMonth).date(eventDay),
         title: eventDescription,
         type: 'EVENT',
-        editing: false
+        editing: false,
+        color: eventColor
       }
     ];
 
@@ -73,6 +75,25 @@
     if (dialog) {
       //@ts-ignore
       dialog.close();
+    }
+  }
+
+  function construcColors(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
+    switch (color) {
+      case 'red':
+        return 'bg-red-500 hover:bg-red-600';
+      case 'green':
+        return 'bg-green-500 hover:bg-green-600';
+      case 'blue':
+        return 'bg-blue-500 hover:bg-blue-600';
+      case 'yellow':
+        return 'bg-yellow-500 hover:bg-yellow-600';
+      case 'purple':
+        return 'bg-purple-500 hover:bg-purple-600';
+      case 'gray':
+        return 'bg-gray-500 hover:bg-gray-600';
+      default:
+        return 'bg-gray-500 hover:bg-gray-600';
     }
   }
 </script>
@@ -218,7 +239,9 @@
 
               {#each preferences.events.filter((e) => moment(e.date).isSame(date, 'date')) as event}
                 <button
-                  class="relative z-10 w-full rounded-md bg-green-400 px-[2px] py-[1px] text-left text-xs text-white transition duration-100 hover:bg-green-500"
+                  class="relative z-10 w-full rounded-md px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
+                    event.color
+                  )}"
                   on:click|stopPropagation={() => {
                     event.editing = true;
                   }}>
@@ -312,6 +335,60 @@
           name="year"
           class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600"
           bind:value={eventYear} />
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <p class="text-sm text-gray-600">Color</p>
+      <div class="flex gap-2">
+        <button
+          class="h-10 w-10 rounded-full bg-red-400 {eventColor === 'red'
+            ? 'border-2 border-gray-700'
+            : ''}"
+          on:click={() => {
+            eventColor = 'red';
+            console.log(eventColor);
+          }} />
+
+        <button
+          class="h-10 w-10 rounded-full bg-green-400 {eventColor === 'green'
+            ? 'border-2 border-gray-700'
+            : ''}"
+          on:click={() => {
+            eventColor = 'green';
+          }} />
+
+        <button
+          class="h-10 w-10 rounded-full bg-blue-400 {eventColor === 'blue'
+            ? 'border-2 border-gray-700'
+            : ''}"
+          on:click={() => {
+            eventColor = 'blue';
+          }} />
+
+        <button
+          class="h-10 w-10 rounded-full bg-yellow-400 {eventColor === 'yellow'
+            ? 'border-2 border-gray-700'
+            : ''}"
+          on:click={() => {
+            eventColor = 'yellow';
+          }} />
+
+        <button
+          class="h-10 w-10 rounded-full bg-purple-400 {eventColor === 'purple'
+            ? 'border-2 border-gray-700'
+            : ''}"
+          on:click={() => {
+            eventColor = 'purple';
+          }} />
+
+        <button
+          class="h-10 w-10 rounded-full bg-gray-400 {eventColor === 'gray'
+            ? 'border-2 border-gray-700'
+            : ''}"
+          on:click={() => {
+            eventColor = 'gray';
+          }} />
       </div>
     </div>
 

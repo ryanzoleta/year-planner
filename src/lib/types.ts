@@ -4,4 +4,5 @@ export type CalendarEvent = {
   title: string;
   type: 'BIRTHDAY' | 'HOLIDAY' | 'EVENT';
   editing: boolean;
+  color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray';
 };
