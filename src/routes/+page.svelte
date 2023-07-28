@@ -1,50 +1,19 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { daysOfWeek, allMonths } from '$lib/data';
-  import type { CalendarEvent, Preferences } from '$lib/types';
+  import { daysOfWeek, defaultPreferences } from '$lib/data';
   import { generateAllDates } from '$lib/utils';
-  import moment from 'moment';
   import { onMount } from 'svelte';
 
-  let preferences: Preferences;
+  let preferences: typeof defaultPreferences;
 
   let selectingMonths = false;
   let selectingHolidays = false;
-  let months = allMonths;
 
   const allDates = generateAllDates(2023);
-  const holidays = [
-    {
-      group: 'US',
-      description: 'US Holidays',
-      visible: false
-    },
-    {
-      group: 'PH',
-      description: 'PH Holidays',
-      visible: false
-    }
-  ];
-
-  let events: CalendarEvent[] = [];
 
   onMount(() => {
-    events = [
-      ...events,
-      {
-        date: moment('2023-07-24'),
-        title: "Aina's Birthday",
-        type: 'BIRTHDAY'
-      }
-    ];
-
-    console.log('Retrieving local copy');
     const preferencesString = localStorage.getItem('preferences');
-    preferences = preferencesString
-      ? JSON.parse(preferencesString)
-      : {
-          layout: '3'
-        };
+    preferences = preferencesString ? JSON.parse(preferencesString) : defaultPreferences;
 
     window.onclick = (event) => {
       const targetElement = event.target;
@@ -65,11 +34,8 @@
     };
   });
 
-  $: {
-    if (browser && preferences) {
-      console.log('Updating local copy');
-      localStorage.setItem('preferences', JSON.stringify(preferences));
-    }
+  $: if (browser && preferences) {
+    localStorage.setItem('preferences', JSON.stringify(preferences));
   }
 </script>
 
@@ -102,7 +68,7 @@
           {#if selectingMonths}
             <div
               class=" absolute right-0 top-full mt-2 flex w-56 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
-              {#each months as month}
+              {#each preferences.months as month}
                 <div class="form-control px-2">
                   <label class="label block w-full cursor-pointer">
                     <input type="checkbox" bind:checked={month.visible} class="checkbox" />
@@ -113,7 +79,7 @@
               <button
                 class="  block w-full rounded-md bg-green-500 py-2 text-center font-bold text-green-100 transition duration-100 hover:bg-green-600"
                 on:click={() => {
-                  months = months.map((m) => {
+                  preferences.months = preferences.months.map((m) => {
                     m.visible = true;
                     return m;
                   });
@@ -121,7 +87,7 @@
               <button
                 class="  block w-full rounded-md border border-slate-300 bg-slate-200 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
                 on:click={() => {
-                  months = months.map((m) => {
+                  preferences.months = preferences.months.map((m) => {
                     m.visible = false;
                     return m;
                   });
@@ -144,7 +110,7 @@
           {#if selectingHolidays}
             <div
               class="absolute right-0 top-full mt-2 flex w-36 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
-              {#each holidays as holiday}
+              {#each preferences.holidays as holiday}
                 <div class="form-control px-2">
                   <label class="label block w-full cursor-pointer">
                     <input type="checkbox" bind:checked={holiday.visible} class="checkbox" />
@@ -165,7 +131,7 @@
       : parseInt(preferences.layout) === 2
       ? 'grid-cols-2'
       : 'grid-cols-1'} gap-2 p-1 {parseInt(preferences.layout) < 3 ? 'px-10' : ''}">
-    {#each months as month}
+    {#each preferences.months as month}
       {#if month.visible}
         <div>
           <h3 class="py-2 text-center text-lg font-bold text-zinc-700">{month.month}</h3>
@@ -219,14 +185,16 @@
                     : 'h-32'}">
                   <p class="p-1 text-xs text-zinc-500">{date.format('D')}</p>
 
-                  {#each events as event}
-                    {#if event.date.isSame(date, 'date')}
-                      <p
-                        class="rounded-md bg-green-500 px-[2px] py-[1px] text-left text-xs text-white">
-                        {event.title}
-                      </p>
-                    {/if}
-                  {/each}
+                  {#if preferences.events}
+                    {#each preferences.events as event}
+                      {#if event.date.isSame(date, 'date')}
+                        <p
+                          class="rounded-md bg-green-500 px-[2px] py-[1px] text-left text-xs text-white">
+                          {event.title}
+                        </p>
+                      {/if}
+                    {/each}
+                  {/if}
                 </button>
               {/if}
             {/each}

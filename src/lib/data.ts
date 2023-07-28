@@ -1,3 +1,5 @@
+import type { CalendarEvent } from './types';
+
 export const allMonths = [
   { month: 'January', visible: true },
   { month: 'February', visible: true },
@@ -13,4 +15,24 @@ export const allMonths = [
   { month: 'December', visible: true }
 ];
 
+const allHolidays = [
+  {
+    group: 'US',
+    description: 'US Holidays',
+    visible: false
+  },
+  {
+    group: 'PH',
+    description: 'PH Holidays',
+    visible: false
+  }
+];
+
 export const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+export const defaultPreferences = {
+  layout: '3',
+  months: allMonths,
+  holidays: allHolidays,
+  events: [] as CalendarEvent[]
+};
