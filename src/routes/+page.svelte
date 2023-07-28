@@ -16,6 +16,11 @@
 
   let allDates = generateAllDates(2023);
 
+  let eventMonth: string;
+  let eventDay: number;
+  let eventYear: number;
+  let eventDescription = '';
+
   onMount(() => {
     const preferencesString = localStorage.getItem('preferences');
     preferences = preferencesString ? JSON.parse(preferencesString) : defaultPreferences;
@@ -41,6 +46,26 @@
   $: if (browser && preferences) {
     localStorage.setItem('preferences', JSON.stringify(preferences));
   }
+
+  function addEvent() {
+    if (eventDescription.trim() === '') return;
+
+    preferences.events = [
+      ...preferences.events,
+      {
+        date: moment().year(eventYear).month(eventMonth).date(eventDay),
+        title: eventDescription,
+        type: 'EVENT'
+      }
+    ];
+
+    const dialog = document.getElementById('addEventDialog');
+
+    if (dialog) {
+      //@ts-ignore
+      dialog.close();
+    }
+  }
 </script>
 
 {#if preferences}
@@ -64,6 +89,12 @@
     </div>
 
     <div class="flex place-items-center gap-5">
+      <button
+        class="rounded-md bg-red-500 px-4 py-2 text-white"
+        on:click={() => {
+          localStorage.removeItem('preferences');
+        }}>Clear localStorage</button>
+
       <div class="flex flex-col gap-1">
         <p class="text-xs text-slate-500">Layout</p>
         <select
@@ -159,11 +190,25 @@
                 : preferences.layout === '2'
                 ? 'h-32'
                 : 'h-32'}
-                {date.isSame(moment(), 'date') ? 'border border-red-500' : ''}">
+                {date.isSame(moment(), 'date') ? 'border border-red-500' : ''}"
+              on:click={() => {
+                const dialog = document.getElementById('addEventDialog');
+
+                eventMonth = date.month().toString();
+                eventDay = date.date();
+                eventYear = date.year();
+                eventDescription = '';
+
+                if (dialog) {
+                  //@ts-ignore
+                  dialog.showModal();
+                }
+              }}>
               <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
 
-              {#each preferences.events.filter((e) => e.date.isSame(date, 'date')) as event}
-                <p class="rounded-md bg-green-500 px-[2px] py-[1px] text-left text-xs text-white">
+              {#each preferences.events.filter((e) => moment(e.date).isSame(date, 'date')) as event}
+                <p
+                  class="z-10 w-full rounded-md bg-green-400 px-[2px] py-[1px] text-left text-xs text-white">
                   {event.title}
                 </p>
               {/each}
@@ -188,3 +233,63 @@
     {/each}
   </div>
 {/if}
+
+<dialog id="addEventDialog" class="w-2/5 rounded-lg bg-white p-5 text-gray-700">
+  <form class="flex flex-col gap-5" on:submit={addEvent}>
+    <h1 class="text-2xl font-bold">Add Event</h1>
+
+    <div class="flex flex-col gap-2">
+      <p class="text-sm text-gray-600">Description</p>
+      <input
+        type="text"
+        class="w-full rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+        bind:value={eventDescription} />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <p class="text-sm text-gray-600">Date</p>
+      <div class="flex gap-2">
+        <select
+          name="month"
+          id="eventMonth"
+          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+          bind:value={eventMonth}>
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="8">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+        <input
+          type="number"
+          id="eventDay"
+          name="day"
+          class="w-20 rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+          bind:value={eventDay} />
+        <input
+          type="number"
+          id="eventYear"
+          name="year"
+          class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600"
+          bind:value={eventYear} />
+      </div>
+    </div>
+
+    <div class="mt-5 flex place-content-end gap-3">
+      <button
+        class="rounded-md bg-gray-100 px-3 py-2 font-bold text-gray-500 transition duration-100 hover:bg-gray-200"
+        value="cancel"
+        formmethod="dialog">Cancel</button>
+      <button
+        class="rounded-md bg-green-200 px-3 py-2 font-bold text-green-600 transition duration-100 hover:bg-green-300"
+        on:click={addEvent}>Add</button>
+    </div>
+  </form>
+</dialog>
