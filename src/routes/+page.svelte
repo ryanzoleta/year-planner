@@ -8,6 +8,8 @@
   import { generateAllDates } from '$lib/utils';
   import moment from 'moment';
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
+  import cuid from 'cuid';
 
   let preferences: typeof defaultPreferences;
 
@@ -40,6 +42,11 @@
 
       selectingMonths = false;
       selectingHolidays = false;
+
+      preferences.events = preferences.events.map((e) => {
+        e.editing = false;
+        return e;
+      });
     };
   });
 
@@ -53,9 +60,11 @@
     preferences.events = [
       ...preferences.events,
       {
+        id: cuid(),
         date: moment().year(eventYear).month(eventMonth).date(eventDay),
         title: eventDescription,
-        type: 'EVENT'
+        type: 'EVENT',
+        editing: false
       }
     ];
 
@@ -93,6 +102,7 @@
         class="rounded-md bg-red-500 px-4 py-2 text-white"
         on:click={() => {
           localStorage.removeItem('preferences');
+          console.log('Preferences cleared');
         }}>Clear localStorage</button>
 
       <div class="flex flex-col gap-1">
@@ -207,10 +217,33 @@
               <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
 
               {#each preferences.events.filter((e) => moment(e.date).isSame(date, 'date')) as event}
-                <p
-                  class="z-10 w-full rounded-md bg-green-400 px-[2px] py-[1px] text-left text-xs text-white">
+                <button
+                  class="relative z-10 w-full rounded-md bg-green-400 px-[2px] py-[1px] text-left text-xs text-white transition duration-100 hover:bg-green-500"
+                  on:click|stopPropagation={() => {
+                    event.editing = true;
+                  }}>
                   {event.title}
-                </p>
+
+                  {#if event.editing}
+                    <div
+                      class="dropdown absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600"
+                      transition:fade={{ duration: 100 }}>
+                      <h3 class="text-lg font-bold text-gray-800">{event.title}</h3>
+                      <div class="flex gap-2">
+                        <button
+                          class="rounded-md border border-gray-200 px-3 py-1 text-sm transition duration-100 hover:bg-gray-100"
+                          >Edit</button>
+                        <button
+                          class="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition duration-100 hover:bg-red-600"
+                          on:click|stopPropagation={() => {
+                            preferences.events = preferences.events.filter((e) => {
+                              return e.id !== event.id;
+                            });
+                          }}>Delete</button>
+                      </div>
+                    </div>
+                  {/if}
+                </button>
               {/each}
 
               {#each preferences.holidays.filter((h) => h.visible) as holidayGroup}
