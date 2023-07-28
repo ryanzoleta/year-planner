@@ -11,13 +11,11 @@
   let selectingMonths = false;
   let selectingHolidays = false;
 
-  const allDates = generateAllDates(2023);
+  let allDates = generateAllDates(2023);
 
   onMount(() => {
     const preferencesString = localStorage.getItem('preferences');
     preferences = preferencesString ? JSON.parse(preferencesString) : defaultPreferences;
-
-    console.log(preferences);
 
     window.onclick = (event) => {
       const targetElement = event.target;
@@ -26,7 +24,6 @@
       while (currentElement !== document.body) {
         //@ts-ignore
         if (currentElement.classList.contains('dropdown')) {
-          console.log('Target is a child of an element with classname "custom"');
           return;
         }
         //@ts-ignore
@@ -44,14 +41,52 @@
 </script>
 
 {#if preferences}
-  <div class="mb-3 flex place-content-between place-items-center gap-2 bg-slate-200 px-4 py-3">
-    <h1 class="text-2xl font-extrabold text-slate-700">Year Planner</h1>
+  <div
+    class="mb-3 flex place-content-between place-items-center gap-2 border-b border-slate-200 px-4 py-3">
+    <div class="flex place-items-center gap-3">
+      <h1 class="text-2xl font-extrabold text-slate-700">Year Planner</h1>
+      <div class="flex place-items-center gap-2">
+        <button
+          class="w-12 rounded-full p-3 text-slate-300 transition duration-200 hover:bg-slate-100"
+          on:click={() => {
+            preferences.year -= 1;
+            allDates = generateAllDates(preferences.year);
+          }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="currentColor"
+            class="h-full w-full">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <p class="text-xl font-bold text-slate-600">{preferences.year}</p>
+        <button
+          class="w-12 rounded-full p-3 text-slate-300 transition duration-200 hover:bg-slate-100"
+          on:click={() => {
+            preferences.year += 1;
+            allDates = generateAllDates(preferences.year);
+          }}
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="currentColor"
+            class="h-full w-full">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
 
     <div class="flex gap-5">
       <div class="flex flex-col gap-1">
         <p class="text-xs text-slate-500">Layout</p>
         <select
-          class="relative h-full w-fit rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-center text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+          class="relative h-full w-fit rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-center text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
           bind:value={preferences.layout}>
           <option value="3">Grid</option>
           <option value="2">2-Column</option>
@@ -62,7 +97,7 @@
       <div class="flex flex-col gap-1">
         <p class="text-xs text-slate-500">Months</p>
         <button
-          class="dropdown relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+          class="dropdown relative rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
           on:click={() => {
             selectingMonths = true;
             selectingHolidays = false;
@@ -105,7 +140,7 @@
       <div class="flex flex-col gap-1">
         <p class="text-xs text-slate-500">Holidays</p>
         <button
-          class="dropdown relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+          class="dropdown relative rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
           on:click={() => {
             selectingHolidays = true;
             selectingMonths = false;

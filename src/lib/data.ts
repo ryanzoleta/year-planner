@@ -55,5 +55,6 @@ export const defaultPreferences = {
   layout: '3',
   months: allMonths,
   holidays: allHolidays,
-  events: [] as CalendarEvent[]
+  events: [] as CalendarEvent[],
+  year: moment().year()
 };
