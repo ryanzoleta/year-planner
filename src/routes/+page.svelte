@@ -47,55 +47,61 @@
   });
 </script>
 
-<div class="mb-3 flex place-content-between place-items-center gap-2 bg-slate-200 p-4">
+<div class="mb-3 flex place-content-between place-items-center gap-2 bg-slate-200 px-4 py-3">
   <h1 class="text-2xl font-extrabold text-slate-700">Year Planner</h1>
 
-  <div>
-    <select
-      class="relative w-fit rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
-      bind:value={columns}>
-      <option value="3">Grid</option>
-      <option value="2">2-Column</option>
-      <option value="1">Stack</option>
-    </select>
+  <div class="flex gap-5">
+    <div class="flex flex-col gap-1">
+      <p class="text-xs text-slate-500">Layout</p>
+      <select
+        class="relative h-full w-fit rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-center text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+        bind:value={columns}>
+        <option value="3">Grid</option>
+        <option value="2">2-Column</option>
+        <option value="1">Stack</option>
+      </select>
+    </div>
 
-    <button
-      class="month-selector relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
-      on:click={() => {
-        selectingMonths = true;
-      }}
-      >Show/Hide Months
+    <div class="flex flex-col gap-1">
+      <p class="text-xs text-slate-500">Months</p>
+      <button
+        class="month-selector relative rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+        on:click={() => {
+          selectingMonths = true;
+        }}
+        >Show/Hide Months
 
-      {#if selectingMonths}
-        <div
-          class=" absolute right-0 top-full mt-2 flex w-56 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
-          {#each months as month}
-            <div class="form-control px-2">
-              <label class="label block w-full cursor-pointer">
-                <input type="checkbox" bind:checked={month.visible} class="checkbox" />
-                <span class="label-text">{month.month}</span>
-              </label>
-            </div>
-          {/each}
-          <button
-            class="  block w-full rounded-md bg-green-500 py-2 text-center font-bold text-green-100 transition duration-100 hover:bg-green-600"
-            on:click={() => {
-              months = months.map((m) => {
-                m.visible = true;
-                return m;
-              });
-            }}>Show All</button>
-          <button
-            class="  block w-full rounded-md border border-slate-300 bg-slate-200 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
-            on:click={() => {
-              months = months.map((m) => {
-                m.visible = false;
-                return m;
-              });
-            }}>Hide All</button>
-        </div>
-      {/if}
-    </button>
+        {#if selectingMonths}
+          <div
+            class=" absolute right-0 top-full mt-2 flex w-56 flex-col gap-2 rounded-md border border-slate-300 bg-slate-200 px-1 py-2 text-left">
+            {#each months as month}
+              <div class="form-control px-2">
+                <label class="label block w-full cursor-pointer">
+                  <input type="checkbox" bind:checked={month.visible} class="checkbox" />
+                  <span class="label-text">{month.month}</span>
+                </label>
+              </div>
+            {/each}
+            <button
+              class="  block w-full rounded-md bg-green-500 py-2 text-center font-bold text-green-100 transition duration-100 hover:bg-green-600"
+              on:click={() => {
+                months = months.map((m) => {
+                  m.visible = true;
+                  return m;
+                });
+              }}>Show All</button>
+            <button
+              class="  block w-full rounded-md border border-slate-300 bg-slate-200 py-2 text-center font-bold text-slate-600 transition duration-100 hover:bg-slate-300"
+              on:click={() => {
+                months = months.map((m) => {
+                  m.visible = false;
+                  return m;
+                });
+              }}>Hide All</button>
+          </div>
+        {/if}
+      </button>
+    </div>
   </div>
 </div>
 
@@ -106,7 +112,7 @@
         <h3 class="py-2 text-center text-lg font-bold text-zinc-700">{month.month}</h3>
         <div class="grid grid-cols-7">
           {#each daysOfWeek as day}
-            <div class="px-2 py-4 text-center text-slate-500">{day}</div>
+            <div class="px-2 py-4 text-center text-slate-400">{day}</div>
           {/each}
         </div>
         <div class="grid grid-cols-7">
