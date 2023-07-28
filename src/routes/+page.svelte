@@ -98,12 +98,12 @@
     </div>
 
     <div class="flex place-items-center gap-5">
-      <button
+      <!-- <button
         class="rounded-md bg-red-500 px-4 py-2 text-white"
         on:click={() => {
           localStorage.removeItem('preferences');
           console.log('Preferences cleared');
-        }}>Clear localStorage</button>
+        }}>Clear localStorage</button> -->
 
       <div class="flex flex-col gap-1">
         <p class="text-xs text-slate-500">Layout</p>
