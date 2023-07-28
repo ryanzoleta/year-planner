@@ -146,7 +146,8 @@
               <button
                 class="flex h-20 flex-col hover:bg-slate-200 {date.day() === 6 || date.day() === 0
                   ? 'bg-slate-100'
-                  : 'bg-slate-50'}">
+                  : 'bg-slate-50'}
+                  {columns === '3' ? 'h-28' : columns === '2' ? 'h-32' : 'h-32'}">
                 <p class="p-1 text-xs text-zinc-500">{date.format('D')}</p>
 
                 {#each events as event}
