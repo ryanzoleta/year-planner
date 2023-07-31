@@ -376,50 +376,50 @@
       <div class="flex gap-2">
         <button
           class="h-10 w-10 rounded-full bg-red-400 {eventColor === 'red'
-            ? 'border-2 border-gray-700'
+            ? 'border-4 border-gray-100'
             : ''}"
-          on:click={() => {
+          on:click|preventDefault={() => {
             eventColor = 'red';
             console.log(eventColor);
           }} />
 
         <button
           class="h-10 w-10 rounded-full bg-green-400 {eventColor === 'green'
-            ? 'border-2 border-gray-700'
+            ? 'border-4 border-gray-100'
             : ''}"
-          on:click={() => {
+          on:click|preventDefault={() => {
             eventColor = 'green';
           }} />
 
         <button
           class="h-10 w-10 rounded-full bg-blue-400 {eventColor === 'blue'
-            ? 'border-2 border-gray-700'
+            ? 'border-4 border-gray-100'
             : ''}"
-          on:click={() => {
+          on:click|preventDefault={() => {
             eventColor = 'blue';
           }} />
 
         <button
           class="h-10 w-10 rounded-full bg-yellow-400 {eventColor === 'yellow'
-            ? 'border-2 border-gray-700'
+            ? 'border-4 border-gray-100'
             : ''}"
-          on:click={() => {
+          on:click|preventDefault={() => {
             eventColor = 'yellow';
           }} />
 
         <button
           class="h-10 w-10 rounded-full bg-purple-400 {eventColor === 'purple'
-            ? 'border-2 border-gray-700'
+            ? 'border-4 border-gray-100'
             : ''}"
-          on:click={() => {
+          on:click|preventDefault={() => {
             eventColor = 'purple';
           }} />
 
         <button
           class="h-10 w-10 rounded-full bg-gray-400 {eventColor === 'gray'
-            ? 'border-2 border-gray-700'
+            ? 'border-4 border-gray-100'
             : ''}"
-          on:click={() => {
+          on:click|preventDefault={() => {
             eventColor = 'gray';
           }} />
       </div>
