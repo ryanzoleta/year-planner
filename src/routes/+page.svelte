@@ -20,11 +20,16 @@
 
   let allDates = generateAllDates(2023);
 
-  let eventMonth: string;
-  let eventDay: number;
-  let eventYear: number;
-  let eventDescription = '';
-  let eventColor: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray' = 'red';
+  let event = {
+    month: '',
+    day: 1,
+    year: 1,
+    description: '',
+    color: 'red' as 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray',
+    endMonth: '',
+    endDay: 1,
+    endYear: 1
+  };
 
   onMount(() => {
     const preferencesString = localStorage.getItem('preferences');
@@ -64,17 +69,17 @@
   }
 
   function addEvent() {
-    if (eventDescription.trim() === '') return;
+    if (event.description.trim() === '') return;
 
     preferences.events = [
       ...preferences.events,
       {
         id: cuid(),
-        date: moment().year(eventYear).month(eventMonth).date(eventDay),
-        title: eventDescription,
+        date: moment().year(event.year).month(event.month).date(event.day),
+        title: event.description,
         type: 'EVENT',
         editing: false,
-        color: eventColor
+        color: event.color
       }
     ];
 
@@ -252,10 +257,14 @@
               on:click={() => {
                 const dialog = document.getElementById('addEventDialog');
 
-                eventMonth = date.month().toString();
-                eventDay = date.date();
-                eventYear = date.year();
-                eventDescription = '';
+                event.month = date.month().toString();
+                event.day = date.date();
+                event.year = date.year();
+                event.description = '';
+
+                event.endMonth = event.month;
+                event.endDay = event.day;
+                event.endYear = event.year;
 
                 if (dialog) {
                   //@ts-ignore
@@ -332,17 +341,17 @@
       <input
         type="text"
         class="w-full rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-        bind:value={eventDescription} />
+        bind:value={event.description} />
     </div>
 
     <div class="flex flex-col gap-2">
-      <p class="text-sm text-gray-600 dark:text-zinc-400">Date</p>
+      <p class="text-sm text-gray-600 dark:text-zinc-400">Start Date</p>
       <div class="flex gap-2">
         <select
           name="month"
           id="eventMonth"
           class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={eventMonth}>
+          bind:value={event.month}>
           <option value="0">January</option>
           <option value="1">February</option>
           <option value="2">March</option>
@@ -359,17 +368,63 @@
 
         <input
           type="number"
-          id="eventDay"
+          id="event.day"
           name="day"
           class="w-20 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={eventDay} />
+          bind:value={event.day} />
 
         <input
           type="number"
-          id="eventYear"
+          id="event.year"
           name="year"
           class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={eventYear} />
+          bind:value={event.year} />
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <p class="text-sm text-gray-600 dark:text-zinc-400">End Date</p>
+      <div class="flex gap-2">
+        <select
+          name="month"
+          id="eventEndMonth"
+          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
+          bind:value={event.endMonth}>
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="8">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+
+        <input
+          type="number"
+          id="eventEndDay"
+          name="day"
+          class="w-20 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
+          bind:value={event.endDay} />
+
+        <input
+          type="number"
+          id="eventEndYear"
+          name="year"
+          class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
+          bind:value={event.endYear} />
+
+        <button
+          class="rounded-md bg-gray-500 px-3 text-sm"
+          on:click={() => {
+            event.endMonth = event.month;
+            event.endDay = event.day;
+            event.endYear = event.year;
+          }}>Same Day</button>
       </div>
     </div>
 
@@ -377,52 +432,52 @@
       <p class="text-sm text-gray-600 dark:text-zinc-400">Color</p>
       <div class="flex gap-2">
         <button
-          class="h-10 w-10 rounded-full bg-red-400 {eventColor === 'red'
+          class="h-10 w-10 rounded-full bg-red-400 {event.color === 'red'
             ? 'border-4 border-gray-100'
             : ''}"
           on:click|preventDefault={() => {
-            eventColor = 'red';
-            console.log(eventColor);
+            event.color = 'red';
+            console.log(event.color);
           }} />
 
         <button
-          class="h-10 w-10 rounded-full bg-green-400 {eventColor === 'green'
+          class="h-10 w-10 rounded-full bg-green-400 {event.color === 'green'
             ? 'border-4 border-gray-100'
             : ''}"
           on:click|preventDefault={() => {
-            eventColor = 'green';
+            event.color = 'green';
           }} />
 
         <button
-          class="h-10 w-10 rounded-full bg-blue-400 {eventColor === 'blue'
+          class="h-10 w-10 rounded-full bg-blue-400 {event.color === 'blue'
             ? 'border-4 border-gray-100'
             : ''}"
           on:click|preventDefault={() => {
-            eventColor = 'blue';
+            event.color = 'blue';
           }} />
 
         <button
-          class="h-10 w-10 rounded-full bg-yellow-400 {eventColor === 'yellow'
+          class="h-10 w-10 rounded-full bg-yellow-400 {event.color === 'yellow'
             ? 'border-4 border-gray-100'
             : ''}"
           on:click|preventDefault={() => {
-            eventColor = 'yellow';
+            event.color = 'yellow';
           }} />
 
         <button
-          class="h-10 w-10 rounded-full bg-purple-400 {eventColor === 'purple'
+          class="h-10 w-10 rounded-full bg-purple-400 {event.color === 'purple'
             ? 'border-4 border-gray-100'
             : ''}"
           on:click|preventDefault={() => {
-            eventColor = 'purple';
+            event.color = 'purple';
           }} />
 
         <button
-          class="h-10 w-10 rounded-full bg-gray-400 {eventColor === 'gray'
+          class="h-10 w-10 rounded-full bg-gray-400 {event.color === 'gray'
             ? 'border-4 border-gray-100'
             : ''}"
           on:click|preventDefault={() => {
-            eventColor = 'gray';
+            event.color = 'gray';
           }} />
       </div>
     </div>
