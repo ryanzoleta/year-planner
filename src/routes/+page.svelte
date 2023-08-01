@@ -22,6 +22,7 @@
   let allDates = generateAllDates(2023);
 
   let event = {
+    id: '',
     month: '',
     day: 1,
     year: 1,
@@ -85,12 +86,7 @@
       }
     ];
 
-    const dialog = document.getElementById('addEventDialog');
-
-    if (dialog) {
-      //@ts-ignore
-      dialog.close();
-    }
+    hideEventDialog();
   }
 
   function construcColors(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
@@ -141,6 +137,24 @@
       return 'rounded-l-md';
     } else if (endDate.isSame(currentDate, 'date')) {
       return 'rounded-r-md';
+    }
+  }
+
+  function showEventDialog() {
+    const dialog = document.getElementById('addEventDialog');
+    if (dialog) {
+      setTimeout(() => {
+        //@ts-ignore
+        dialog.showModal();
+      }, 100);
+    }
+  }
+
+  function hideEventDialog() {
+    const dialog = document.getElementById('addEventDialog');
+    if (dialog) {
+      //@ts-ignore
+      dialog.close();
     }
   }
 </script>
@@ -289,8 +303,6 @@
                 : 'h-32'}
                 {date.isSame(moment(), 'date') ? 'border border-red-500' : ''}"
               on:click={() => {
-                const dialog = document.getElementById('addEventDialog');
-
                 event.month = date.month().toString();
                 event.day = date.date();
                 event.year = date.year();
@@ -299,11 +311,9 @@
                 event.endMonth = event.month;
                 event.endDay = event.day;
                 event.endYear = event.year;
+                event.id = '';
 
-                if (dialog) {
-                  //@ts-ignore
-                  dialog.showModal();
-                }
+                showEventDialog();
               }}>
               <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
 
@@ -316,6 +326,21 @@
                     )} {determineRoundness(calendarEvent, date)}"
                     on:click|stopPropagation={() => {
                       calendarEvent.editing = true;
+
+                      const startDate = moment(calendarEvent.date);
+                      const endDate = moment(calendarEvent.endDate);
+
+                      event.month = startDate.month().toString();
+                      event.day = startDate.date();
+                      event.year = startDate.year();
+                      event.description = calendarEvent.title;
+
+                      event.endMonth = endDate.month().toString();
+                      event.endDay = endDate.date();
+                      event.endYear = endDate.year();
+                      event.id = calendarEvent.id;
+
+                      showEventDialog();
                     }}>
                     {#if moment(calendarEvent.date).isSame(date, 'date')}
                       {calendarEvent.title}
@@ -323,7 +348,7 @@
                       <p class={construcColorsText(calendarEvent.color)}>heh</p>
                     {/if}
 
-                    {#if calendarEvent.editing}
+                    <!-- {#if calendarEvent.editing}
                       <div
                         class="dropdown dark:text-zinc-30l0 absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600 dark:border-zinc-700 dark:bg-zinc-800"
                         transition:fade={{ duration: 100 }}>
@@ -343,7 +368,7 @@
                             }}>Delete</button>
                         </div>
                       </div>
-                    {/if}
+                    {/if} -->
                   </button>
                 {/each}
 
@@ -371,9 +396,13 @@
 
 <dialog
   id="addEventDialog"
-  class="w-2/5 rounded-lg bg-white p-5 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
+  class="dialog w-2/5 rounded-lg bg-white p-5 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
   <form class="flex flex-col gap-5" on:submit={addEvent}>
-    <h1 class="text-2xl font-bold">Add Event</h1>
+    {#if event.id}
+      <h1 class="text-2xl font-bold">Edit Event</h1>
+    {:else}
+      <h1 class="text-2xl font-bold">Add Event</h1>
+    {/if}
 
     <div class="flex flex-col gap-2">
       <p class="text-sm text-gray-600 dark:text-zinc-400">Description</p>
@@ -521,14 +550,27 @@
       </div>
     </div>
 
-    <div class="mt-5 flex place-content-end gap-3">
-      <button
-        class="rounded-md bg-gray-100 px-3 py-2 font-bold text-gray-500 transition duration-100 hover:bg-gray-200"
-        value="cancel"
-        formmethod="dialog">Cancel</button>
-      <button
-        class="rounded-md bg-green-200 px-3 py-2 font-bold text-green-600 transition duration-100 hover:bg-green-300"
-        type="submit">Add</button>
+    <div class="mt-5 flex place-content-between gap-3">
+      <div class="flex-1">
+        {#if event.id}
+          <button
+            class=" rounded-md bg-red-500 px-3 py-2 font-bold text-red-100 transition duration-100 hover:bg-red-600"
+            on:click|preventDefault={() => {
+              preferences.events = preferences.events.filter((e) => {
+                return e.id !== event.id;
+              });
+              hideEventDialog();
+            }}>Delete</button>
+        {/if}
+      </div>
+      <div class="flex gap-2">
+        <button
+          class="rounded-md bg-gray-100 px-3 py-2 font-bold text-gray-500 transition duration-100 hover:bg-gray-200"
+          on:click|preventDefault={hideEventDialog}>Cancel</button>
+        <button
+          class="rounded-md bg-green-200 px-3 py-2 font-bold text-green-600 transition duration-100 hover:bg-green-300"
+          type="submit">Add</button>
+      </div>
     </div>
   </form>
 </dialog>
