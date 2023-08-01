@@ -489,7 +489,7 @@
         formmethod="dialog">Cancel</button>
       <button
         class="rounded-md bg-green-200 px-3 py-2 font-bold text-green-600 transition duration-100 hover:bg-green-300"
-        on:click={addEvent}>Add</button>
+        type="submit">Add</button>
     </div>
   </form>
 </dialog>
