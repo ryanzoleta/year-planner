@@ -309,26 +309,26 @@
 
               <div class="flex w-full flex-col gap-1">
                 <!-- {#each preferences.events.filter( (e) => moment(e.date).isSame(date, 'date') ) as event} -->
-                {#each preferences.events.filter((e) => date.isSameOrAfter(moment(e.date), 'date') && date.isSameOrBefore(moment(e.endDate), 'date')) as event}
+                {#each preferences.events.filter((e) => date.isSameOrAfter(moment(e.date), 'date') && date.isSameOrBefore(moment(e.endDate), 'date')) as calendarEvent}
                   <button
                     class="relative z-10 w-full px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
-                      event.color
-                    )} {determineRoundness(event, date)}"
+                      calendarEvent.color
+                    )} {determineRoundness(calendarEvent, date)}"
                     on:click|stopPropagation={() => {
-                      event.editing = true;
+                      calendarEvent.editing = true;
                     }}>
-                    {#if moment(event.date).isSame(date, 'date')}
-                      {event.title}
+                    {#if moment(calendarEvent.date).isSame(date, 'date')}
+                      {calendarEvent.title}
                     {:else}
-                      <p class={construcColorsText(event.color)}>heh</p>
+                      <p class={construcColorsText(calendarEvent.color)}>heh</p>
                     {/if}
 
-                    {#if event.editing}
+                    {#if calendarEvent.editing}
                       <div
                         class="dropdown dark:text-zinc-30l0 absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600 dark:border-zinc-700 dark:bg-zinc-800"
                         transition:fade={{ duration: 100 }}>
                         <h3 class="text-lg font-bold text-gray-800 dark:text-zinc-300">
-                          {event.title}
+                          {calendarEvent.title}
                         </h3>
                         <div class="flex gap-2">
                           <button
@@ -338,7 +338,7 @@
                             class="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition duration-100 hover:bg-red-600"
                             on:click|stopPropagation={() => {
                               preferences.events = preferences.events.filter((e) => {
-                                return e.id !== event.id;
+                                return e.id !== calendarEvent.id;
                               });
                             }}>Delete</button>
                         </div>
