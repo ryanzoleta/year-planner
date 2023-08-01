@@ -57,6 +57,8 @@
         e.editing = false;
         return e;
       });
+
+      hideEventDialog();
     };
   });
 
@@ -397,7 +399,7 @@
 <dialog
   id="addEventDialog"
   class="dialog w-2/5 rounded-lg bg-white p-5 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
-  <form class="flex flex-col gap-5" on:submit={addEvent}>
+  <form class="dropdown flex flex-col gap-5" on:submit={addEvent}>
     {#if event.id}
       <h1 class="text-2xl font-bold">Edit Event</h1>
     {:else}
