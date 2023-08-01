@@ -8,7 +8,6 @@
   import { generateAllDates } from '$lib/utils';
   import moment from 'moment';
   import { onMount } from 'svelte';
-  import { fade } from 'svelte/transition';
   import cuid from 'cuid';
   import IconMoon from '$lib/components/icons/IconMoon.svelte';
   import IconSun from '$lib/components/icons/IconSun.svelte';
@@ -320,7 +319,6 @@
               <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
 
               <div class="flex w-full flex-col gap-1">
-                <!-- {#each preferences.events.filter( (e) => moment(e.date).isSame(date, 'date') ) as event} -->
                 {#each preferences.events.filter((e) => date.isSameOrAfter(moment(e.date), 'date') && date.isSameOrBefore(moment(e.endDate), 'date')) as calendarEvent}
                   <button
                     class="relative z-10 w-full px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
@@ -349,28 +347,6 @@
                     {:else}
                       <p class={construcColorsText(calendarEvent.color)}>heh</p>
                     {/if}
-
-                    <!-- {#if calendarEvent.editing}
-                      <div
-                        class="dropdown dark:text-zinc-30l0 absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600 dark:border-zinc-700 dark:bg-zinc-800"
-                        transition:fade={{ duration: 100 }}>
-                        <h3 class="text-lg font-bold text-gray-800 dark:text-zinc-300">
-                          {calendarEvent.title}
-                        </h3>
-                        <div class="flex gap-2">
-                          <button
-                            class="rounded-md border border-gray-200 px-3 py-1 text-sm transition duration-100 hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
-                            >Edit</button>
-                          <button
-                            class="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition duration-100 hover:bg-red-600"
-                            on:click|stopPropagation={() => {
-                              preferences.events = preferences.events.filter((e) => {
-                                return e.id !== calendarEvent.id;
-                              });
-                            }}>Delete</button>
-                        </div>
-                      </div>
-                    {/if} -->
                   </button>
                 {/each}
 
@@ -507,7 +483,6 @@
             : ''}"
           on:click|preventDefault={() => {
             event.color = 'red';
-            console.log(event.color);
           }} />
 
         <button
