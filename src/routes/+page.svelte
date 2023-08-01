@@ -264,53 +264,55 @@
               }}>
               <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
 
-              {#each preferences.events.filter((e) => moment(e.date).isSame(date, 'date')) as event}
-                <button
-                  class="relative z-10 w-full rounded-md px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
-                    event.color
-                  )}"
-                  on:click|stopPropagation={() => {
-                    event.editing = true;
-                  }}>
-                  {event.title}
+              <div class="flex w-full flex-col gap-1">
+                {#each preferences.events.filter( (e) => moment(e.date).isSame(date, 'date') ) as event}
+                  <button
+                    class="relative z-10 w-full rounded-md px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
+                      event.color
+                    )}"
+                    on:click|stopPropagation={() => {
+                      event.editing = true;
+                    }}>
+                    {event.title}
 
-                  {#if event.editing}
-                    <div
-                      class="dropdown dark:text-zinc-30l0 absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600 dark:border-zinc-700 dark:bg-zinc-800"
-                      transition:fade={{ duration: 100 }}>
-                      <h3 class="text-lg font-bold text-gray-800 dark:text-zinc-300">
-                        {event.title}
-                      </h3>
-                      <div class="flex gap-2">
-                        <button
-                          class="rounded-md border border-gray-200 px-3 py-1 text-sm transition duration-100 hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
-                          >Edit</button>
-                        <button
-                          class="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition duration-100 hover:bg-red-600"
-                          on:click|stopPropagation={() => {
-                            preferences.events = preferences.events.filter((e) => {
-                              return e.id !== event.id;
-                            });
-                          }}>Delete</button>
+                    {#if event.editing}
+                      <div
+                        class="dropdown dark:text-zinc-30l0 absolute left-0 top-full mt-1 flex flex-col gap-2 rounded-lg border border-gray-100 bg-white p-3 text-gray-600 dark:border-zinc-700 dark:bg-zinc-800"
+                        transition:fade={{ duration: 100 }}>
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-zinc-300">
+                          {event.title}
+                        </h3>
+                        <div class="flex gap-2">
+                          <button
+                            class="rounded-md border border-gray-200 px-3 py-1 text-sm transition duration-100 hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
+                            >Edit</button>
+                          <button
+                            class="rounded-md bg-red-500 px-3 py-1 text-sm text-white transition duration-100 hover:bg-red-600"
+                            on:click|stopPropagation={() => {
+                              preferences.events = preferences.events.filter((e) => {
+                                return e.id !== event.id;
+                              });
+                            }}>Delete</button>
+                        </div>
                       </div>
-                    </div>
-                  {/if}
-                </button>
-              {/each}
-
-              {#each preferences.holidays.filter((h) => h.visible) as holidayGroup}
-                {#each holidayGroup.dates.filter( (d) => moment(d.date).isSame(date, 'date') ) as holiday}
-                  <p
-                    class="z-10 w-full rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
-                    {#if holidayGroup.group === 'US'}
-                      🇺🇸
-                    {:else if holidayGroup.group === 'PH'}
-                      🇵🇭
                     {/if}
-                    {holiday.holiday}
-                  </p>
+                  </button>
                 {/each}
-              {/each}
+
+                {#each preferences.holidays.filter((h) => h.visible) as holidayGroup}
+                  {#each holidayGroup.dates.filter( (d) => moment(d.date).isSame(date, 'date') ) as holiday}
+                    <p
+                      class="z-10 w-full rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
+                      {#if holidayGroup.group === 'US'}
+                        🇺🇸
+                      {:else if holidayGroup.group === 'PH'}
+                        🇵🇭
+                      {/if}
+                      {holiday.holiday}
+                    </p>
+                  {/each}
+                {/each}
+              </div>
             </button>
           {/each}
         </div>
