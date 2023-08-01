@@ -12,6 +12,7 @@
   import cuid from 'cuid';
   import IconMoon from '$lib/components/icons/IconMoon.svelte';
   import IconSun from '$lib/components/icons/IconSun.svelte';
+  import type { CalendarEvent } from '$lib/types';
 
   let preferences: typeof defaultPreferences;
 
@@ -76,6 +77,7 @@
       {
         id: cuid(),
         date: moment().year(event.year).month(event.month).date(event.day),
+        endDate: moment().year(event.endYear).month(event.endMonth).date(event.endDay),
         title: event.description,
         type: 'EVENT',
         editing: false,
@@ -94,19 +96,51 @@
   function construcColors(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
     switch (color) {
       case 'red':
-        return 'bg-red-500 hover:bg-red-600';
+        return 'bg-red-500';
       case 'green':
-        return 'bg-green-500 hover:bg-green-600';
+        return 'bg-green-500';
       case 'blue':
-        return 'bg-blue-500 hover:bg-blue-600';
+        return 'bg-blue-500';
       case 'yellow':
-        return 'bg-yellow-500 hover:bg-yellow-600';
+        return 'bg-yellow-500';
       case 'purple':
-        return 'bg-purple-500 hover:bg-purple-600';
+        return 'bg-purple-500';
       case 'gray':
-        return 'bg-gray-500 hover:bg-gray-600';
+        return 'bg-gray-500';
       default:
-        return 'bg-gray-500 hover:bg-gray-600';
+        return 'bg-gray-500';
+    }
+  }
+
+  function construcColorsText(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
+    switch (color) {
+      case 'red':
+        return 'text-red-500';
+      case 'green':
+        return 'text-green-500';
+      case 'blue':
+        return 'text-blue-500';
+      case 'yellow':
+        return 'text-yellow-500';
+      case 'purple':
+        return 'text-purple-500';
+      case 'gray':
+        return 'text-gray-500';
+      default:
+        return 'text-gray-500';
+    }
+  }
+
+  function determineRoundness(event: CalendarEvent, currentDate: moment.Moment) {
+    const startDate = moment(event.date);
+    const endDate = moment(event.endDate);
+
+    if (startDate.isSame(endDate, 'date')) {
+      return 'rounded-md';
+    } else if (startDate.isSame(currentDate, 'date')) {
+      return 'rounded-l-md';
+    } else if (endDate.isSame(currentDate, 'date')) {
+      return 'rounded-r-md';
     }
   }
 </script>
@@ -274,15 +308,20 @@
               <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
 
               <div class="flex w-full flex-col gap-1">
-                {#each preferences.events.filter( (e) => moment(e.date).isSame(date, 'date') ) as event}
+                <!-- {#each preferences.events.filter( (e) => moment(e.date).isSame(date, 'date') ) as event} -->
+                {#each preferences.events.filter((e) => date.isSameOrAfter(moment(e.date), 'date') && date.isSameOrBefore(moment(e.endDate), 'date')) as event}
                   <button
-                    class="relative z-10 w-full rounded-md px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
+                    class="relative z-10 w-full px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
                       event.color
-                    )}"
+                    )} {determineRoundness(event, date)}"
                     on:click|stopPropagation={() => {
                       event.editing = true;
                     }}>
-                    {event.title}
+                    {#if moment(event.date).isSame(date, 'date')}
+                      {event.title}
+                    {:else}
+                      <p class={construcColorsText(event.color)}>heh</p>
+                    {/if}
 
                     {#if event.editing}
                       <div
