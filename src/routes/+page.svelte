@@ -12,8 +12,8 @@
   import IconMoon from '$lib/components/icons/IconMoon.svelte';
   import IconSun from '$lib/components/icons/IconSun.svelte';
   import type { CalendarEvent } from '$lib/types';
-
-  let preferences: typeof defaultPreferences;
+  import CalendarDay from '$lib/components/ui/CalendarDay.svelte';
+  import preferences from '$lib/stores/preferences';
 
   let selectingMonths = false;
   let selectingHolidays = false;
@@ -32,9 +32,14 @@
     endYear: 1
   };
 
+  let mounted = false;
+
   onMount(() => {
     const preferencesString = localStorage.getItem('preferences');
-    preferences = preferencesString ? JSON.parse(preferencesString) : defaultPreferences;
+    $preferences =
+      preferencesString && preferencesString !== '{}'
+        ? JSON.parse(preferencesString)
+        : defaultPreferences;
 
     window.onclick = (event) => {
       const targetElement = event.target;
@@ -52,19 +57,21 @@
       selectingMonths = false;
       selectingHolidays = false;
 
-      preferences.events = preferences.events.map((e) => {
+      $preferences.events = $preferences.events.map((e) => {
         e.editing = false;
         return e;
       });
 
       hideEventDialog();
     };
+
+    mounted = true;
   });
 
-  $: if (browser && preferences) {
-    localStorage.setItem('preferences', JSON.stringify(preferences));
+  $: if (browser && preferences && mounted) {
+    localStorage.setItem('preferences', JSON.stringify($preferences));
 
-    if (preferences.darkMode) {
+    if ($preferences.darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
@@ -74,8 +81,8 @@
   function addEvent() {
     if (event.description.trim() === '') return;
 
-    preferences.events = [
-      ...preferences.events,
+    $preferences.events = [
+      ...$preferences.events,
       {
         id: cuid(),
         date: moment().year(event.year).month(event.month).date(event.day),
@@ -168,14 +175,14 @@
       <div class="flex place-items-center gap-2">
         <IconButton
           on:click={() => {
-            preferences.year -= 1;
-            allDates = generateAllDates(preferences.year);
+            $preferences.year -= 1;
+            allDates = generateAllDates($preferences.year);
           }}><IconChevronLeft /></IconButton>
-        <p class="text-xl font-bold text-slate-600 dark:text-slate-400">{preferences.year}</p>
+        <p class="text-xl font-bold text-slate-600 dark:text-slate-400">{$preferences.year}</p>
         <IconButton
           on:click={() => {
-            preferences.year += 1;
-            allDates = generateAllDates(preferences.year);
+            $preferences.year += 1;
+            allDates = generateAllDates($preferences.year);
           }}><IconChevronRight /></IconButton>
       </div>
     </div>
@@ -192,10 +199,11 @@
         <p class="text-xs text-slate-500">Layout</p>
         <select
           class="relative h-full w-fit rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-center text-sm font-bold text-slate-600 transition duration-100 hover:bg-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-          bind:value={preferences.layout}>
+          bind:value={$preferences.layout}>
           <option value="3">Grid</option>
           <option value="2">2-Column</option>
           <option value="1">Stack</option>
+          <option value="0">Continuous</option>
         </select>
       </div>
 
@@ -203,7 +211,7 @@
         <p class="text-xs text-slate-500">Months</p>
         <Selector
           label="Show/Hide Months"
-          bind:list={preferences.months}
+          bind:list={$preferences.months}
           on:activate={() => {
             selectingMonths = true;
             selectingHolidays = false;
@@ -215,7 +223,7 @@
         <p class="text-xs text-slate-500">Holidays</p>
         <Selector
           label="Show/Hide Holidays"
-          bind:list={preferences.holidays}
+          bind:list={$preferences.holidays}
           on:activate={() => {
             selectingMonths = false;
             selectingHolidays = true;
@@ -223,17 +231,17 @@
           show={selectingHolidays} />
       </div>
 
-      {#if preferences.darkMode}
+      {#if $preferences.darkMode}
         <IconButton
           on:click={() => {
-            preferences.darkMode = false;
+            $preferences.darkMode = false;
           }}>
           <IconSun />
         </IconButton>
       {:else}
         <IconButton
           on:click={() => {
-            preferences.darkMode = true;
+            $preferences.darkMode = true;
           }}>
           <IconMoon />
         </IconButton>
@@ -242,26 +250,34 @@
   </div>
 
   <div
-    class="grid bg-white dark:bg-black {parseInt(preferences.layout) === 3
+    class="grid bg-white dark:bg-black {parseInt($preferences.layout) === 3
       ? 'grid-cols-3'
-      : parseInt(preferences.layout) === 2
+      : parseInt($preferences.layout) === 2
       ? 'grid-cols-2'
-      : 'grid-cols-1'} gap-2 p-1 {parseInt(preferences.layout) < 3 ? 'px-10' : ''}">
-    {#each preferences.months.filter((m) => m.visible) as month}
-      <div>
-        <h3 class="py-2 text-center text-lg font-bold text-zinc-700 dark:text-zinc-500">
-          {month.description}
-        </h3>
-
+      : 'grid-cols-1'} gap-2 p-1 {parseInt($preferences.layout) < 3 ? 'px-10' : ''}">
+    {#if $preferences.layout === '0'}
+      <div class="px-56">
         <div class="grid grid-cols-7">
           {#each daysOfWeek as day}
-            <div class="px-2 py-4 text-center text-xs text-slate-400 dark:text-zinc-500">{day}</div>
+            <div class="px-2 py-4 text-center text-xs text-slate-400 dark:text-zinc-500">
+              {day}
+            </div>
           {/each}
         </div>
 
         <div class="grid grid-cols-7">
-          {#each allDates.filter((d) => d.format('MMMM') === month.description) as date}
-            {#if date.date() === 1}
+          {#each allDates.filter((d) => {
+            return $preferences.months
+              .filter((m) => {
+                return m.visible;
+              })
+              .map((m) => {
+                return m.description;
+              })
+              .includes(d.format('MMMM'));
+          }) as date, index}
+            <!-- {#each allDates as date, index} -->
+            {#if index === 0}
               {#if date.format('ddd') === 'Tue'}
                 <div />
               {:else if date.format('ddd') === 'Wed'}
@@ -291,18 +307,8 @@
                 <div />
               {/if}
             {/if}
-
-            <button
-              class="bg-whtie flex h-20 flex-col transition duration-100 hover:bg-slate-200 dark:hover:bg-zinc-800 {date.day() ===
-                6 || date.day() === 0
-                ? 'bg-slate-100 dark:bg-zinc-950'
-                : 'bg-slate-50 dark:bg-zinc-900'}
-                  {preferences.layout === '3'
-                ? 'h-28'
-                : preferences.layout === '2'
-                ? 'h-32'
-                : 'h-32'}
-                {date.isSame(moment(), 'date') ? 'border border-red-500' : ''}"
+            <CalendarDay
+              {date}
               on:click={() => {
                 event.month = date.month().toString();
                 event.day = date.date();
@@ -315,67 +321,163 @@
                 event.id = '';
 
                 showEventDialog();
-              }}>
-              <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
+              }}
+              on:eventClick={(e) => {
+                const calendarEvent = e.detail.event;
 
-              <div class="flex w-full flex-col gap-1">
-                {#each preferences.events.filter((e) => date.isSameOrAfter(moment(e.date), 'date') && date.isSameOrBefore(moment(e.endDate), 'date')) as calendarEvent}
-                  <button
-                    class="relative z-10 w-full px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
-                      calendarEvent.color
-                    )} {determineRoundness(calendarEvent, date)}"
-                    on:click|stopPropagation={() => {
-                      calendarEvent.editing = true;
+                calendarEvent.editing = true;
 
-                      const startDate = moment(calendarEvent.date);
-                      const endDate = moment(calendarEvent.endDate);
+                const startDate = moment(calendarEvent.date);
+                const endDate = moment(calendarEvent.endDate);
 
-                      event.month = startDate.month().toString();
-                      event.day = startDate.date();
-                      event.year = startDate.year();
-                      event.description = calendarEvent.title;
+                event.month = startDate.month().toString();
+                event.day = startDate.date();
+                event.year = startDate.year();
+                event.description = calendarEvent.title;
 
-                      event.endMonth = endDate.month().toString();
-                      event.endDay = endDate.date();
-                      event.endYear = endDate.year();
-                      event.id = calendarEvent.id;
+                event.endMonth = endDate.month().toString();
+                event.endDay = endDate.date();
+                event.endYear = endDate.year();
+                event.id = calendarEvent.id;
 
-                      showEventDialog();
-                    }}>
-                    {#if moment(calendarEvent.date).isSame(date, 'date')}
-                      {calendarEvent.title}
-                    {:else}
-                      <p class={construcColorsText(calendarEvent.color)}>heh</p>
-                    {/if}
-                  </button>
-                {/each}
-
-                {#each preferences.holidays.filter((h) => h.visible) as holidayGroup}
-                  {#each holidayGroup.dates.filter( (d) => moment(d.date).isSame(date, 'date') ) as holiday}
-                    <p
-                      class="z-10 w-full rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
-                      {#if holidayGroup.group === 'US'}
-                        🇺🇸
-                      {:else if holidayGroup.group === 'PH'}
-                        🇵🇭
-                      {/if}
-                      {holiday.holiday}
-                    </p>
-                  {/each}
-                {/each}
-              </div>
-            </button>
+                showEventDialog();
+              }} />
           {/each}
         </div>
       </div>
-    {/each}
+    {:else}
+      {#each $preferences.months.filter((m) => m.visible) as month}
+        <div>
+          <h3 class="py-2 text-center text-lg font-bold text-zinc-700 dark:text-zinc-500">
+            {month.description}
+          </h3>
+
+          <div class="grid grid-cols-7">
+            {#each daysOfWeek as day}
+              <div class="px-2 py-4 text-center text-xs text-slate-400 dark:text-zinc-500">
+                {day}
+              </div>
+            {/each}
+          </div>
+
+          <div class="grid grid-cols-7">
+            {#each allDates.filter((d) => d.format('MMMM') === month.description) as date}
+              {#if date.date() === 1}
+                {#if date.format('ddd') === 'Tue'}
+                  <div />
+                {:else if date.format('ddd') === 'Wed'}
+                  <div />
+                  <div />
+                {:else if date.format('ddd') === 'Thu'}
+                  <div />
+                  <div />
+                  <div />
+                {:else if date.format('ddd') === 'Fri'}
+                  <div />
+                  <div />
+                  <div />
+                  <div />
+                {:else if date.format('ddd') === 'Sat'}
+                  <div />
+                  <div />
+                  <div />
+                  <div />
+                  <div />
+                {:else if date.format('ddd') === 'Sun'}
+                  <div />
+                  <div />
+                  <div />
+                  <div />
+                  <div />
+                  <div />
+                {/if}
+              {/if}
+
+              <button
+                class="bg-whtie flex h-20 flex-col transition duration-100 hover:bg-slate-200 dark:hover:bg-zinc-800 {date.day() ===
+                  6 || date.day() === 0
+                  ? 'bg-slate-100 dark:bg-zinc-950'
+                  : 'bg-slate-50 dark:bg-zinc-900'}
+                  {$preferences.layout === '3'
+                  ? 'h-28'
+                  : $preferences.layout === '2'
+                  ? 'h-32'
+                  : 'h-32'}
+                {date.isSame(moment(), 'date') ? 'border border-red-500' : ''}"
+                on:click={() => {
+                  event.month = date.month().toString();
+                  event.day = date.date();
+                  event.year = date.year();
+                  event.description = '';
+
+                  event.endMonth = event.month;
+                  event.endDay = event.day;
+                  event.endYear = event.year;
+                  event.id = '';
+
+                  showEventDialog();
+                }}>
+                <p class="rounded-full py-1 text-xs text-zinc-400">{date.format('D')}</p>
+
+                <div class="flex w-full flex-col gap-1">
+                  {#each $preferences.events.filter((e) => date.isSameOrAfter(moment(e.date), 'date') && date.isSameOrBefore(moment(e.endDate), 'date')) as calendarEvent}
+                    <button
+                      class="relative z-10 w-full px-[2px] py-[1px] text-left text-xs text-white transition duration-100 {construcColors(
+                        calendarEvent.color
+                      )} {determineRoundness(calendarEvent, date)}"
+                      on:click|stopPropagation={() => {
+                        calendarEvent.editing = true;
+
+                        const startDate = moment(calendarEvent.date);
+                        const endDate = moment(calendarEvent.endDate);
+
+                        event.month = startDate.month().toString();
+                        event.day = startDate.date();
+                        event.year = startDate.year();
+                        event.description = calendarEvent.title;
+
+                        event.endMonth = endDate.month().toString();
+                        event.endDay = endDate.date();
+                        event.endYear = endDate.year();
+                        event.id = calendarEvent.id;
+
+                        showEventDialog();
+                      }}>
+                      {#if moment(calendarEvent.date).isSame(date, 'date')}
+                        {calendarEvent.title}
+                      {:else}
+                        <p class={construcColorsText(calendarEvent.color)}>heh</p>
+                      {/if}
+                    </button>
+                  {/each}
+
+                  {#each $preferences.holidays.filter((h) => h.visible) as holidayGroup}
+                    {#each holidayGroup.dates.filter( (d) => moment(d.date).isSame(date, 'date') ) as holiday}
+                      <p
+                        class="z-10 w-full rounded-md bg-gray-400 px-[2px] py-[1px] text-left text-xs text-white">
+                        {#if holidayGroup.group === 'US'}
+                          🇺🇸
+                        {:else if holidayGroup.group === 'PH'}
+                          🇵🇭
+                        {/if}
+                        {holiday.holiday}
+                      </p>
+                    {/each}
+                  {/each}
+                </div>
+              </button>
+            {/each}
+          </div>
+        </div>
+      {/each}
+    {/if}
   </div>
 {/if}
 
 <dialog
   id="addEventDialog"
   class="dialog w-2/5 rounded-lg bg-white p-5 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
-  <form class="dropdown flex flex-col gap-5" on:submit={addEvent}>
+  <form class="dropdown flex flex-col gap-5" on:submit|preventDefault={addEvent}>
     {#if event.id}
       <h1 class="text-2xl font-bold">Edit Event</h1>
     {:else}
@@ -407,7 +509,7 @@
           <option value="6">July</option>
           <option value="7">August</option>
           <option value="8">September</option>
-          <option value="8">October</option>
+          <option value="9">October</option>
           <option value="10">November</option>
           <option value="11">December</option>
         </select>
@@ -445,7 +547,7 @@
           <option value="6">July</option>
           <option value="7">August</option>
           <option value="8">September</option>
-          <option value="8">October</option>
+          <option value="9">October</option>
           <option value="10">November</option>
           <option value="11">December</option>
         </select>
@@ -533,7 +635,7 @@
           <button
             class=" rounded-md bg-red-500 px-3 py-2 font-bold text-red-100 transition duration-100 hover:bg-red-600"
             on:click|preventDefault={() => {
-              preferences.events = preferences.events.filter((e) => {
+              $preferences.events = $preferences.events.filter((e) => {
                 return e.id !== event.id;
               });
               hideEventDialog();
