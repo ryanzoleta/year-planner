@@ -97,6 +97,25 @@
     hideEventDialog();
   }
 
+  function editEvent() {
+    if (event.description.trim() === '') return;
+
+    $preferences.events = [
+      ...$preferences.events.filter((e) => e.id !== event.id),
+      {
+        id: event.id,
+        date: moment().year(event.year).month(event.month).date(event.day),
+        endDate: moment().year(event.endYear).month(event.endMonth).date(event.endDay),
+        title: event.description,
+        type: 'EVENT',
+        editing: false,
+        color: event.color
+      }
+    ];
+
+    hideEventDialog();
+  }
+
   function construcColors(
     color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'orange' | 'gray'
   ) {
@@ -489,7 +508,12 @@
 <dialog
   id="addEventDialog"
   class="dialog w-2/5 rounded-lg bg-white p-5 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
-  <form class="dropdown flex flex-col gap-5" on:submit|preventDefault={addEvent}>
+  <form
+    class="dropdown flex flex-col gap-5"
+    on:submit|preventDefault={() => {
+      if (event.id) editEvent();
+      else addEvent();
+    }}>
     {#if event.id}
       <h1 class="text-2xl font-bold">Edit Event</h1>
     {:else}
@@ -674,9 +698,15 @@
         <button
           class="rounded-md bg-gray-100 px-3 py-2 font-bold text-gray-500 transition duration-100 hover:bg-gray-200"
           on:click|preventDefault={hideEventDialog}>Cancel</button>
-        <button
-          class="rounded-md bg-green-200 px-3 py-2 font-bold text-green-600 transition duration-100 hover:bg-green-300"
-          type="submit">Add</button>
+        {#if event.id}
+          <button
+            class="rounded-md bg-green-200 px-3 py-2 font-bold text-green-600 transition duration-100 hover:bg-green-300"
+            type="submit">Save Changes</button>
+        {:else}
+          <button
+            class="rounded-md bg-green-200 px-3 py-2 font-bold text-green-600 transition duration-100 hover:bg-green-300"
+            type="submit">Add</button>
+        {/if}
       </div>
     </div>
   </form>
