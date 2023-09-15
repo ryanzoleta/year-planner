@@ -26,7 +26,7 @@
     day: 1,
     year: 1,
     description: '',
-    color: 'red' as 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray',
+    color: 'red' as 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'orange' | 'gray',
     endMonth: '',
     endDay: 1,
     endYear: 1
@@ -97,7 +97,9 @@
     hideEventDialog();
   }
 
-  function construcColors(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
+  function construcColors(
+    color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'orange' | 'gray'
+  ) {
     switch (color) {
       case 'red':
         return 'bg-red-500';
@@ -109,6 +111,10 @@
         return 'bg-yellow-500';
       case 'purple':
         return 'bg-purple-500';
+      case 'pink':
+        return 'bg-pink-500';
+      case 'orange':
+        return 'bg-orange-500';
       case 'gray':
         return 'bg-gray-500';
       default:
@@ -116,7 +122,9 @@
     }
   }
 
-  function construcColorsText(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
+  function construcColorsText(
+    color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'orange' | 'gray'
+  ) {
     switch (color) {
       case 'red':
         return 'text-red-500';
@@ -128,6 +136,10 @@
         return 'text-yellow-500';
       case 'purple':
         return 'text-purple-500';
+      case 'pink':
+        return 'text-pink-500';
+      case 'orange':
+        return 'text-orange-500';
       case 'gray':
         return 'text-gray-500';
       default:
@@ -617,6 +629,22 @@
             : ''}"
           on:click|preventDefault={() => {
             event.color = 'purple';
+          }} />
+
+        <button
+          class="h-10 w-10 rounded-full bg-pink-400 {event.color === 'pink'
+            ? 'border-4 border-gray-100'
+            : ''}"
+          on:click|preventDefault={() => {
+            event.color = 'pink';
+          }} />
+
+        <button
+          class="h-10 w-10 rounded-full bg-orange-400 {event.color === 'orange'
+            ? 'border-4 border-gray-100'
+            : ''}"
+          on:click|preventDefault={() => {
+            event.color = 'orange';
           }} />
 
         <button
