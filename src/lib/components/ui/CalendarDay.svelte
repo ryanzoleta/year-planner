@@ -7,22 +7,28 @@
 
   export let date: moment.Moment;
 
-  function construcColorsText(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
+  function construcColors(
+    color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'orange' | 'gray'
+  ) {
     switch (color) {
       case 'red':
-        return 'text-red-500';
+        return 'bg-red-500';
       case 'green':
-        return 'text-green-500';
+        return 'bg-green-500';
       case 'blue':
-        return 'text-blue-500';
+        return 'bg-blue-500';
       case 'yellow':
-        return 'text-yellow-500';
+        return 'bg-yellow-500';
       case 'purple':
-        return 'text-purple-500';
+        return 'bg-purple-500';
+      case 'pink':
+        return 'bg-pink-500';
+      case 'orange':
+        return 'bg-orange-500';
       case 'gray':
-        return 'text-gray-500';
+        return 'bg-gray-500';
       default:
-        return 'text-gray-500';
+        return 'bg-gray-500';
     }
   }
 
@@ -38,23 +44,28 @@
       return 'rounded-r-md';
     }
   }
-
-  function construcColors(color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'gray') {
+  function construcColorsText(
+    color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'orange' | 'gray'
+  ) {
     switch (color) {
       case 'red':
-        return 'bg-red-500';
+        return 'text-red-500';
       case 'green':
-        return 'bg-green-500';
+        return 'text-green-500';
       case 'blue':
-        return 'bg-blue-500';
+        return 'text-blue-500';
       case 'yellow':
-        return 'bg-yellow-500';
+        return 'text-yellow-500';
       case 'purple':
-        return 'bg-purple-500';
+        return 'text-purple-500';
+      case 'pink':
+        return 'text-pink-500';
+      case 'orange':
+        return 'text-orange-500';
       case 'gray':
-        return 'bg-gray-500';
+        return 'text-gray-500';
       default:
-        return 'bg-gray-500';
+        return 'text-gray-500';
     }
   }
 
