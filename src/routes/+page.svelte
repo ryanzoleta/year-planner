@@ -22,15 +22,13 @@
 
   let event = {
     id: '',
-    month: '',
-    day: 1,
-    year: 1,
     description: '',
     color: 'red' as 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'pink' | 'orange' | 'gray',
-    endMonth: '',
-    endDay: 1,
-    endYear: 1
+    date: moment().format('YYYY-MM-DD'),
+    endDate: moment().format('YYYY-MM-DD')
   };
+
+  $: console.log(event.date);
 
   let mounted = false;
 
@@ -85,8 +83,8 @@
       ...$preferences.events,
       {
         id: cuid(),
-        date: moment().year(event.year).month(event.month).date(event.day),
-        endDate: moment().year(event.endYear).month(event.endMonth).date(event.endDay),
+        date: moment(event.date),
+        endDate: moment(event.endDate),
         title: event.description,
         type: 'EVENT',
         editing: false,
@@ -104,8 +102,8 @@
       ...$preferences.events.filter((e) => e.id !== event.id),
       {
         id: event.id,
-        date: moment().year(event.year).month(event.month).date(event.day),
-        endDate: moment().year(event.endYear).month(event.endMonth).date(event.endDay),
+        date: moment(event.date),
+        endDate: moment(event.endDate),
         title: event.description,
         type: 'EVENT',
         editing: false,
@@ -341,15 +339,10 @@
             <CalendarDay
               {date}
               on:click={() => {
-                event.month = date.month().toString();
-                event.day = date.date();
-                event.year = date.year();
-                event.description = '';
-
-                event.endMonth = event.month;
-                event.endDay = event.day;
-                event.endYear = event.year;
+                event.date = date.format('YYYY-MM-DD');
+                event.endDate = date.format('YYYY-MM-DD');
                 event.id = '';
+                console.log(event);
 
                 showEventDialog();
               }}
@@ -357,18 +350,8 @@
                 const calendarEvent = e.detail.event;
 
                 calendarEvent.editing = true;
-
-                const startDate = moment(calendarEvent.date);
-                const endDate = moment(calendarEvent.endDate);
-
-                event.month = startDate.month().toString();
-                event.day = startDate.date();
-                event.year = startDate.year();
-                event.description = calendarEvent.title;
-
-                event.endMonth = endDate.month().toString();
-                event.endDay = endDate.date();
-                event.endYear = endDate.year();
+                event.date = date.format('YYYY-MM-DD');
+                event.endDate = date.format('YYYY-MM-DD');
                 event.id = calendarEvent.id;
 
                 showEventDialog();
@@ -436,14 +419,8 @@
                   : 'h-32'}
                 {date.isSame(moment(), 'date') ? 'border border-red-500' : ''}"
                 on:click={() => {
-                  event.month = date.month().toString();
-                  event.day = date.date();
-                  event.year = date.year();
-                  event.description = '';
-
-                  event.endMonth = event.month;
-                  event.endDay = event.day;
-                  event.endYear = event.year;
+                  event.date = date.format('YYYY-MM-DD');
+                  event.endDate = date.format('YYYY-MM-DD');
                   event.id = '';
 
                   showEventDialog();
@@ -459,17 +436,8 @@
                       on:click|stopPropagation={() => {
                         calendarEvent.editing = true;
 
-                        const startDate = moment(calendarEvent.date);
-                        const endDate = moment(calendarEvent.endDate);
-
-                        event.month = startDate.month().toString();
-                        event.day = startDate.date();
-                        event.year = startDate.year();
-                        event.description = calendarEvent.title;
-
-                        event.endMonth = endDate.month().toString();
-                        event.endDay = endDate.date();
-                        event.endYear = endDate.year();
+                        event.date = moment(calendarEvent.date).format('YYYY-MM-DD');
+                        event.endDate = moment(calendarEvent.endDate).format('YYYY-MM-DD');
                         event.id = calendarEvent.id;
 
                         showEventDialog();
@@ -530,85 +498,21 @@
 
     <div class="flex flex-col gap-2">
       <p class="text-sm text-gray-600 dark:text-zinc-400">Start Date</p>
-      <div class="flex gap-2">
-        <select
-          name="month"
-          id="eventMonth"
-          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={event.month}>
-          <option value="0">January</option>
-          <option value="1">February</option>
-          <option value="2">March</option>
-          <option value="3">April</option>
-          <option value="4">May</option>
-          <option value="5">June</option>
-          <option value="6">July</option>
-          <option value="7">August</option>
-          <option value="8">September</option>
-          <option value="9">October</option>
-          <option value="10">November</option>
-          <option value="11">December</option>
-        </select>
-
+      <div>
         <input
-          type="number"
-          id="event.day"
-          name="day"
-          class="w-20 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={event.day} />
-
-        <input
-          type="number"
-          id="event.year"
-          name="year"
-          class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={event.year} />
+          type="date"
+          bind:value={event.date}
+          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400" />
       </div>
     </div>
 
     <div class="flex flex-col gap-2">
       <p class="text-sm text-gray-600 dark:text-zinc-400">End Date</p>
       <div class="flex gap-2">
-        <select
-          name="month"
-          id="eventEndMonth"
-          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={event.endMonth}>
-          <option value="0">January</option>
-          <option value="1">February</option>
-          <option value="2">March</option>
-          <option value="3">April</option>
-          <option value="4">May</option>
-          <option value="5">June</option>
-          <option value="6">July</option>
-          <option value="7">August</option>
-          <option value="8">September</option>
-          <option value="9">October</option>
-          <option value="10">November</option>
-          <option value="11">December</option>
-        </select>
-
         <input
-          type="number"
-          id="eventEndDay"
-          name="day"
-          class="w-20 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={event.endDay} />
-
-        <input
-          type="number"
-          id="eventEndYear"
-          name="year"
-          class="w-24 rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400"
-          bind:value={event.endYear} />
-
-        <button
-          class="rounded-md bg-gray-500 px-3 text-sm"
-          on:click={() => {
-            event.endMonth = event.month;
-            event.endDay = event.day;
-            event.endYear = event.year;
-          }}>Same Day</button>
+          type="date"
+          bind:value={event.endDate}
+          class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400" />
       </div>
     </div>
 
