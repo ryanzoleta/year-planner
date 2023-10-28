@@ -340,6 +340,7 @@
                 event.date = date.format('YYYY-MM-DD');
                 event.endDate = date.format('YYYY-MM-DD');
                 event.id = '';
+                event.description = '';
 
                 showEventDialog();
               }}
