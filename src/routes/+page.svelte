@@ -28,8 +28,6 @@
     endDate: moment().format('YYYY-MM-DD')
   };
 
-  $: console.log(event.date);
-
   let mounted = false;
 
   onMount(() => {
@@ -342,7 +340,6 @@
                 event.date = date.format('YYYY-MM-DD');
                 event.endDate = date.format('YYYY-MM-DD');
                 event.id = '';
-                console.log(event);
 
                 showEventDialog();
               }}
@@ -350,6 +347,8 @@
                 const calendarEvent = e.detail.event;
 
                 calendarEvent.editing = true;
+                event.description = calendarEvent.title;
+                event.color = calendarEvent.color;
                 event.date = date.format('YYYY-MM-DD');
                 event.endDate = date.format('YYYY-MM-DD');
                 event.id = calendarEvent.id;
@@ -436,6 +435,7 @@
                       on:click|stopPropagation={() => {
                         calendarEvent.editing = true;
 
+                        event.description = calendarEvent.title;
                         event.date = moment(calendarEvent.date).format('YYYY-MM-DD');
                         event.endDate = moment(calendarEvent.endDate).format('YYYY-MM-DD');
                         event.id = calendarEvent.id;
@@ -513,6 +513,12 @@
           type="date"
           bind:value={event.endDate}
           class="rounded-md bg-gray-100 px-4 py-2 text-gray-600 dark:bg-zinc-700 dark:text-zinc-400" />
+
+        <button
+          class="rounded-md bg-gray-200 px-3 py-2 font-bold text-gray-600 transition duration-100 hover:bg-gray-300"
+          on:click|preventDefault|stopPropagation={() => {
+            event.endDate = event.date;
+          }}>Same Day</button>
       </div>
     </div>
 
